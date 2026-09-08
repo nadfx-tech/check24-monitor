@@ -1,0 +1,6 @@
+# Lokale Dateien
+preise.db
+monitor.log
+preisverlauf.html
+start_monitor.vbs
+__pycache__/
