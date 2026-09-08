@@ -1,6 +1,6 @@
 {
-  "telegram_token": "8769937262:AAG3ArlgGrbIEQJ-7Plicw1JGvf0ezoHhj0",
-  "telegram_chat_id": "7070362842",
+  "telegram_token": "",
+  "telegram_chat_id": "",
   "check_interval_min": 15,
   "summary_hours": [8, 12, 16, 20, 23],
   "hotels": [
