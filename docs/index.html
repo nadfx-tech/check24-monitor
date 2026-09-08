@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta name="theme-color" content="#1a1a2e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,6 +11,7 @@
     <title>Check24 Preismonitor</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -24,8 +25,14 @@
         h1 {
             text-align: center;
             color: #00d4ff;
-            font-size: 1.4em;
-            margin: 8px 0 16px;
+            font-size: 1.3em;
+            margin: 8px 0 12px;
+        }
+        h2 {
+            color: #00d4ff;
+            font-size: 1.1em;
+            margin: 20px 0 12px;
+            padding-left: 4px;
         }
         .status {
             text-align: center;
@@ -34,27 +41,24 @@
             margin-bottom: 12px;
         }
         .status .live { color: #44ff44; }
-        .chart-box {
-            background: #16213e;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-        }
+
+        /* Tabs */
         .tabs {
             display: flex;
             gap: 6px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
         }
+        .tabs::-webkit-scrollbar { display: none; }
         .tab {
-            padding: 8px 14px;
+            padding: 7px 12px;
             border-radius: 8px;
             background: #16213e;
             color: #aaa;
             border: 1px solid #333;
-            font-size: 0.85em;
+            font-size: 0.8em;
             white-space: nowrap;
             cursor: pointer;
             flex-shrink: 0;
@@ -64,10 +68,125 @@
             color: #00d4ff;
             border-color: #00d4ff;
         }
-        .cards {
-            display: grid;
-            gap: 10px;
+
+        /* Chart */
+        .chart-box {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
         }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 45vh;
+            min-height: 280px;
+        }
+        .chart-controls {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .chart-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: #0f3460;
+            color: #00d4ff;
+            border: 1px solid #1a4a8a;
+            font-size: 0.75em;
+            cursor: pointer;
+        }
+        .chart-btn:active { background: #1a5a9a; }
+        .chart-btn.active-btn { background: #1a5a9a; border-color: #00d4ff; }
+
+        /* Fullscreen chart */
+        .chart-fullscreen {
+            position: fixed !important;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 9999;
+            background: #0f0f23;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 10px !important;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-fullscreen .chart-container {
+            flex: 1;
+            height: auto !important;
+            min-height: 0 !important;
+        }
+        .chart-fullscreen .chart-controls {
+            flex-shrink: 0;
+            padding-bottom: env(safe-area-inset-bottom, 8px);
+        }
+
+        /* Analyse */
+        .analysis-box {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+        .analysis-title {
+            font-weight: 600;
+            font-size: 0.95em;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        .analysis-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+            font-size: 0.85em;
+        }
+        .analysis-row:last-child { border-bottom: none; }
+        .analysis-label { color: #999; }
+        .analysis-value { font-weight: 600; }
+        .analysis-good { color: #44ff44; }
+        .analysis-bad { color: #ff4444; }
+        .analysis-neutral { color: #ffaa44; }
+        .recommendation {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+        .rec-buy { background: #0a3d0a; border: 1px solid #44ff44; }
+        .rec-wait { background: #3d3d0a; border: 1px solid #ffaa44; }
+        .rec-caution { background: #3d0a0a; border: 1px solid #ff4444; }
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(24, 1fr);
+            gap: 2px;
+            margin: 10px 0;
+        }
+        .heat-cell {
+            aspect-ratio: 1;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.55em;
+            color: #fff;
+            min-width: 0;
+        }
+        .heat-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65em;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        /* Cards */
+        .cards { display: grid; gap: 10px; }
         .card {
             background: #16213e;
             border-radius: 12px;
@@ -76,12 +195,12 @@
         }
         .card-name {
             font-weight: 600;
-            font-size: 1em;
+            font-size: 0.95em;
             margin-bottom: 6px;
             color: #fff;
         }
         .card-price {
-            font-size: 1.6em;
+            font-size: 1.5em;
             font-weight: 700;
             color: #00d4ff;
         }
@@ -89,16 +208,17 @@
             display: flex;
             gap: 12px;
             margin-top: 8px;
-            font-size: 0.8em;
+            font-size: 0.78em;
             color: #888;
         }
         .card-trend {
             display: inline-block;
             padding: 2px 8px;
             border-radius: 4px;
-            font-size: 0.85em;
+            font-size: 0.8em;
             font-weight: 600;
             margin-left: 8px;
+            vertical-align: middle;
         }
         .trend-down { background: #0a3d0a; color: #44ff44; }
         .trend-up { background: #3d0a0a; color: #ff4444; }
@@ -111,21 +231,15 @@
             color: #00d4ff;
             border-radius: 6px;
             text-decoration: none;
-            font-size: 0.85em;
+            font-size: 0.82em;
         }
-        .error {
-            text-align: center;
-            color: #ff4444;
-            padding: 40px 20px;
-        }
-        .loading {
-            text-align: center;
-            color: #666;
-            padding: 40px 20px;
-        }
+        .error { text-align: center; color: #ff4444; padding: 40px 20px; }
+        .loading { text-align: center; color: #666; padding: 40px 20px; }
+
         @media (min-width: 600px) {
             .cards { grid-template-columns: 1fr 1fr; }
-            body { padding: 20px; max-width: 900px; margin: 0 auto; }
+            body { padding: 20px; max-width: 960px; margin: 0 auto; }
+            .chart-container { height: 50vh; }
         }
     </style>
 </head>
@@ -133,14 +247,27 @@
     <h1>Check24 Preismonitor</h1>
     <p class="status" id="status">Lade Daten...</p>
 
-    <div class="tabs" id="tabs">
-        <div class="tab active" data-view="all">Alle</div>
-    </div>
+    <div class="tabs" id="tabs"></div>
 
     <div class="chart-box">
-        <canvas id="chart"></canvas>
+        <div class="chart-container">
+            <canvas id="chart"></canvas>
+        </div>
+        <div class="chart-controls">
+            <button class="chart-btn" onclick="toggleFullscreen()">&#x26F6; Vollbild</button>
+            <button class="chart-btn" onclick="resetZoom()">Alles</button>
+            <button class="chart-btn" onclick="zoomLast(1)">1h</button>
+            <button class="chart-btn" onclick="zoomLast(6)">6h</button>
+            <button class="chart-btn" onclick="zoomLast(24)">24h</button>
+            <button class="chart-btn" onclick="zoomLast(72)">3T</button>
+            <button class="chart-btn" onclick="zoomLast(168)">7T</button>
+            <button class="chart-btn" onclick="zoomLast(720)">30T</button>
+        </div>
     </div>
 
+    <div id="analysis"></div>
+
+    <h2>Hotels</h2>
     <div class="cards" id="cards">
         <p class="loading">Lade Preisdaten...</p>
     </div>
@@ -153,15 +280,16 @@
         let allData = {};
         let activeHotel = 'all';
 
+        // ── Daten laden ──
         async function loadData() {
             try {
-                const cacheBust = `?t=${Date.now()}`;
-                const resp = await fetch(PRICES_URL + cacheBust);
+                const resp = await fetch(PRICES_URL + '?t=' + Date.now());
                 if (!resp.ok) throw new Error('Daten nicht verfügbar');
                 allData = await resp.json();
                 renderTabs();
                 renderChart();
                 renderCards();
+                renderAnalysis();
                 updateStatus();
             } catch (e) {
                 document.getElementById('cards').innerHTML =
@@ -171,19 +299,20 @@
 
         function updateStatus() {
             const checks = Object.values(allData).map(h => h.last_check).filter(Boolean);
-            if (checks.length === 0) return;
+            if (!checks.length) return;
             const latest = new Date(Math.max(...checks.map(c => new Date(c))));
             const ago = Math.round((Date.now() - latest) / 60000);
-            let agoText = ago < 1 ? 'gerade eben' : ago < 60 ? `vor ${ago} Min.` : `vor ${Math.round(ago/60)} Std.`;
+            const agoText = ago < 1 ? 'gerade eben' : ago < 60 ? `vor ${ago} Min.` : `vor ${Math.round(ago/60)} Std.`;
             document.getElementById('status').innerHTML =
                 `<span class="live">&#9679;</span> Letzter Check: ${agoText} &mdash; ${Object.keys(allData).length} Hotels`;
         }
 
+        // ── Tabs ──
         function renderTabs() {
             const tabs = document.getElementById('tabs');
             let html = `<div class="tab ${activeHotel==='all'?'active':''}" data-view="all">Alle</div>`;
             Object.entries(allData).forEach(([id, info]) => {
-                const short = (info.name || id).split(' ').slice(0,2).join(' ');
+                const short = (info.name || id).split(' ').slice(0, 2).join(' ');
                 html += `<div class="tab ${activeHotel===id?'active':''}" data-view="${id}">${short}</div>`;
             });
             tabs.innerHTML = html;
@@ -192,10 +321,12 @@
                     activeHotel = t.dataset.view;
                     renderTabs();
                     renderChart();
+                    renderAnalysis();
                 });
             });
         }
 
+        // ── Chart ──
         function renderChart() {
             const ctx = document.getElementById('chart').getContext('2d');
             if (chart) chart.destroy();
@@ -205,11 +336,8 @@
             Object.entries(allData).forEach(([id, info]) => {
                 if (activeHotel !== 'all' && activeHotel !== id) return;
                 const history = info.history || [];
-                const points = history.map(h => ({
-                    x: h.timestamp,
-                    y: h.price
-                }));
-                if (points.length === 0) return;
+                const points = history.map(h => ({ x: h.timestamp, y: h.price }));
+                if (!points.length) return;
                 const color = COLORS[i % COLORS.length];
                 datasets.push({
                     label: info.name || id,
@@ -217,7 +345,8 @@
                     borderColor: color,
                     backgroundColor: color + '33',
                     tension: 0.3,
-                    pointRadius: window.innerWidth < 600 ? 2 : 4,
+                    pointRadius: points.length > 100 ? 1 : (window.innerWidth < 600 ? 2 : 3),
+                    pointHoverRadius: 6,
                     borderWidth: 2,
                     fill: activeHotel !== 'all',
                 });
@@ -229,7 +358,7 @@
                 data: { datasets },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
                     plugins: {
                         legend: {
@@ -240,6 +369,14 @@
                             callbacks: {
                                 label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('de-DE') + ' \u20ac'
                             }
+                        },
+                        zoom: {
+                            pan: { enabled: true, mode: 'x' },
+                            zoom: {
+                                wheel: { enabled: true },
+                                pinch: { enabled: true },
+                                mode: 'x',
+                            }
                         }
                     },
                     scales: {
@@ -247,7 +384,7 @@
                             type: 'time',
                             time: {
                                 tooltipFormat: 'dd.MM.yyyy HH:mm',
-                                displayFormats: { hour: 'HH:mm', day: 'dd.MM.' }
+                                displayFormats: { minute: 'HH:mm', hour: 'dd.MM. HH:mm', day: 'dd.MM.yyyy' }
                             },
                             ticks: { color: '#666', maxTicksLimit: 6, font: { size: 10 } },
                             grid: { color: '#222' }
@@ -265,11 +402,249 @@
             });
         }
 
+        function resetZoom() { if (chart) chart.resetZoom(); }
+
+        function zoomLast(hours) {
+            if (!chart) return;
+            const now = Date.now();
+            const from = now - hours * 3600000;
+            chart.zoomScale('x', { min: from, max: now }, 'default');
+        }
+
+        function toggleFullscreen() {
+            const box = document.querySelector('.chart-box');
+            box.classList.toggle('chart-fullscreen');
+            // Chart muss nach Resize neu gerendert werden
+            setTimeout(() => { if (chart) chart.resize(); }, 100);
+        }
+
+        // ESC zum Schließen des Fullscreen
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                const box = document.querySelector('.chart-box');
+                if (box.classList.contains('chart-fullscreen')) {
+                    box.classList.remove('chart-fullscreen');
+                    setTimeout(() => { if (chart) chart.resize(); }, 100);
+                }
+            }
+        });
+
+        // ── Analyse ──
+        function analyzeHotel(info) {
+            const history = (info.history || []).filter(h => h.price);
+            if (history.length < 3) return null;
+
+            const prices = history.map(h => h.price);
+            const current = prices[prices.length - 1];
+            const min = Math.min(...prices);
+            const max = Math.max(...prices);
+            const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+            const range = max - min;
+
+            // Trend: letzte 20% der Datenpunkte vs. vorherige
+            const split = Math.max(1, Math.floor(prices.length * 0.8));
+            const recentAvg = prices.slice(split).reduce((a, b) => a + b, 0) / (prices.length - split);
+            const olderAvg = prices.slice(0, split).reduce((a, b) => a + b, 0) / split;
+            const trendPct = ((recentAvg - olderAvg) / olderAvg) * 100;
+
+            // Volatilität (Standardabweichung)
+            const variance = prices.reduce((sum, p) => sum + Math.pow(p - avg, 2), 0) / prices.length;
+            const stdDev = Math.sqrt(variance);
+            const volatility = (stdDev / avg) * 100;
+
+            // Position im Preisbereich (0 = am Minimum, 100 = am Maximum)
+            const position = range > 0 ? ((current - min) / range) * 100 : 50;
+
+            // Tageszeit-Analyse: wann sind Preise am niedrigsten?
+            const hourlyPrices = {};
+            history.forEach(h => {
+                const hour = new Date(h.timestamp).getHours();
+                if (!hourlyPrices[hour]) hourlyPrices[hour] = [];
+                hourlyPrices[hour].push(h.price);
+            });
+
+            const hourlyAvg = {};
+            for (const [hour, ps] of Object.entries(hourlyPrices)) {
+                hourlyAvg[hour] = ps.reduce((a, b) => a + b, 0) / ps.length;
+            }
+
+            // Beste und schlechteste Stunden
+            const sortedHours = Object.entries(hourlyAvg)
+                .sort((a, b) => a[1] - b[1]);
+            const bestHours = sortedHours.slice(0, 3).map(h => parseInt(h[0]));
+            const worstHours = sortedHours.slice(-3).map(h => parseInt(h[0]));
+
+            // Wochentag-Analyse
+            const dayPrices = {};
+            const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+            history.forEach(h => {
+                const day = new Date(h.timestamp).getDay();
+                if (!dayPrices[day]) dayPrices[day] = [];
+                dayPrices[day].push(h.price);
+            });
+            const dayAvg = {};
+            for (const [day, ps] of Object.entries(dayPrices)) {
+                dayAvg[day] = ps.reduce((a, b) => a + b, 0) / ps.length;
+            }
+            const sortedDays = Object.entries(dayAvg).sort((a, b) => a[1] - b[1]);
+            const bestDay = sortedDays.length > 0 ? dayNames[parseInt(sortedDays[0][0])] : '?';
+
+            // Empfehlung
+            let recommendation, recClass;
+            if (position < 20 && trendPct <= 0) {
+                recommendation = `Der Preis liegt nahe am bisherigen Tiefststand und der Trend ist fallend. Guter Zeitpunkt zum Buchen!`;
+                recClass = 'rec-buy';
+            } else if (position < 35) {
+                recommendation = `Der Preis liegt im unteren Drittel des bisherigen Bereichs. Tendenziell ein guter Zeitpunkt.`;
+                recClass = 'rec-buy';
+            } else if (position > 80 && trendPct > 0) {
+                recommendation = `Der Preis liegt nahe am Höchststand und steigt weiter. Abwarten könnte riskant sein, da Preise weiter steigen könnten — oder auf einen Rückgang hoffen.`;
+                recClass = 'rec-caution';
+            } else if (trendPct < -2) {
+                recommendation = `Der Trend zeigt nach unten (${trendPct.toFixed(1)}%). Abwarten könnte sich lohnen, aber das Minimum ist schwer vorherzusagen.`;
+                recClass = 'rec-wait';
+            } else if (trendPct > 2) {
+                recommendation = `Der Trend zeigt nach oben (${trendPct.toFixed(1)}%). Wenn der Preis akzeptabel ist, eher bald buchen.`;
+                recClass = 'rec-caution';
+            } else {
+                recommendation = `Der Preis ist relativ stabil. Kein dringender Handlungsbedarf, aber den Markt weiter beobachten.`;
+                recClass = 'rec-wait';
+            }
+
+            return {
+                current, min, max, avg, range,
+                trendPct, volatility, position,
+                hourlyAvg, bestHours, worstHours,
+                bestDay, sortedDays, dayNames,
+                recommendation, recClass,
+                dataPoints: history.length,
+            };
+        }
+
+        function renderAnalysis() {
+            const container = document.getElementById('analysis');
+            const hotelsToAnalyze = activeHotel === 'all'
+                ? Object.entries(allData)
+                : Object.entries(allData).filter(([id]) => id === activeHotel);
+
+            let html = '<h2>Analyse & Buchungsempfehlung</h2>';
+
+            hotelsToAnalyze.forEach(([id, info]) => {
+                const a = analyzeHotel(info);
+                if (!a) {
+                    html += `<div class="analysis-box"><div class="analysis-title">${info.name || id}</div><p style="color:#666;font-size:0.85em">Noch nicht genug Daten für eine Analyse.</p></div>`;
+                    return;
+                }
+
+                // Heatmap-Daten
+                const heatMin = Math.min(...Object.values(a.hourlyAvg));
+                const heatMax = Math.max(...Object.values(a.hourlyAvg));
+                const heatRange = heatMax - heatMin || 1;
+
+                let heatmapHtml = '<div class="heatmap">';
+                for (let h = 0; h < 24; h++) {
+                    const avg = a.hourlyAvg[h];
+                    if (avg !== undefined) {
+                        const intensity = (avg - heatMin) / heatRange;
+                        const r = Math.round(68 + intensity * 187);
+                        const g = Math.round(255 - intensity * 211);
+                        const b = Math.round(68 - intensity * 24);
+                        heatmapHtml += `<div class="heat-cell" style="background:rgba(${r},${g},${b},0.8)" title="${h}:00 — ${avg.toLocaleString('de-DE')} \u20ac">${h}</div>`;
+                    } else {
+                        heatmapHtml += `<div class="heat-cell" style="background:#222">-</div>`;
+                    }
+                }
+                heatmapHtml += '</div><div class="heat-label"><span>Grün = günstig</span><span>Rot = teuer</span></div>';
+
+                // Wochentag-Balken
+                let dayHtml = '<div style="display:flex;gap:4px;margin:8px 0;align-items:flex-end;height:50px;">';
+                const dayMin = Math.min(...Object.values(a.dayAvg || {}));
+                const dayMax = Math.max(...Object.values(a.dayAvg || {}));
+                const dayRange = dayMax - dayMin || 1;
+                for (let d = 1; d <= 7; d++) {
+                    const dayIdx = d % 7;
+                    const avg = a.dayAvg ? a.dayAvg[dayIdx] : undefined;
+                    if (avg !== undefined) {
+                        const pct = 20 + ((avg - dayMin) / dayRange) * 80;
+                        const intensity = (avg - dayMin) / dayRange;
+                        const r = Math.round(68 + intensity * 187);
+                        const g = Math.round(255 - intensity * 211);
+                        const b = Math.round(68 - intensity * 24);
+                        dayHtml += `<div style="flex:1;text-align:center"><div style="height:${pct}%;background:rgba(${r},${g},${b},0.8);border-radius:3px 3px 0 0;min-height:8px"></div><div style="font-size:0.6em;color:#888;margin-top:2px">${a.dayNames[dayIdx]}</div></div>`;
+                    }
+                }
+                dayHtml += '</div>';
+
+                const trendIcon = a.trendPct < -1 ? '\u25BC' : a.trendPct > 1 ? '\u25B2' : '\u25C6';
+                const trendClass = a.trendPct < -1 ? 'analysis-good' : a.trendPct > 1 ? 'analysis-bad' : 'analysis-neutral';
+                const posClass = a.position < 35 ? 'analysis-good' : a.position > 70 ? 'analysis-bad' : 'analysis-neutral';
+
+                html += `
+                <div class="analysis-box">
+                    <div class="analysis-title">${info.name || id}</div>
+                    <div class="analysis-row">
+                        <span class="analysis-label">Aktuell</span>
+                        <span class="analysis-value">${a.current.toLocaleString('de-DE')} \u20ac</span>
+                    </div>
+                    <div class="analysis-row">
+                        <span class="analysis-label">Spanne</span>
+                        <span class="analysis-value">${a.min.toLocaleString('de-DE')} — ${a.max.toLocaleString('de-DE')} \u20ac</span>
+                    </div>
+                    <div class="analysis-row">
+                        <span class="analysis-label">Durchschnitt</span>
+                        <span class="analysis-value">${a.avg.toLocaleString('de-DE', {maximumFractionDigits:0})} \u20ac</span>
+                    </div>
+                    <div class="analysis-row">
+                        <span class="analysis-label">Position im Bereich</span>
+                        <span class="analysis-value ${posClass}">${a.position.toFixed(0)}% (0%=Min, 100%=Max)</span>
+                    </div>
+                    <div class="analysis-row">
+                        <span class="analysis-label">Trend</span>
+                        <span class="analysis-value ${trendClass}">${trendIcon} ${a.trendPct > 0 ? '+' : ''}${a.trendPct.toFixed(1)}%</span>
+                    </div>
+                    <div class="analysis-row">
+                        <span class="analysis-label">Volatilität</span>
+                        <span class="analysis-value">${a.volatility.toFixed(1)}%</span>
+                    </div>
+                    <div class="analysis-row">
+                        <span class="analysis-label">Bester Wochentag</span>
+                        <span class="analysis-value analysis-good">${a.bestDay}</span>
+                    </div>
+                    <div class="analysis-row">
+                        <span class="analysis-label">Beste Uhrzeiten</span>
+                        <span class="analysis-value analysis-good">${a.bestHours.map(h => h + ':00').join(', ')}</span>
+                    </div>
+                    <div class="analysis-row">
+                        <span class="analysis-label">Datenpunkte</span>
+                        <span class="analysis-value">${a.dataPoints}</span>
+                    </div>
+
+                    <div style="margin-top:10px;font-size:0.78em;color:#888">Preis nach Uhrzeit</div>
+                    ${heatmapHtml}
+
+                    <div style="margin-top:10px;font-size:0.78em;color:#888">Preis nach Wochentag</div>
+                    ${dayHtml}
+
+                    <div class="recommendation ${a.recClass}">
+                        <strong>Empfehlung:</strong> ${a.recommendation}
+                    </div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // ── Cards ──
         function renderCards() {
             const container = document.getElementById('cards');
             let html = '';
 
-            Object.entries(allData).forEach(([id, info], i) => {
+            // Sortiert nach Preis (günstigste zuerst)
+            const sorted = Object.entries(allData)
+                .filter(([id]) => activeHotel === 'all' || id === activeHotel)
+                .sort((a, b) => (a[1].price || 99999) - (b[1].price || 99999));
+
+            sorted.forEach(([id, info], i) => {
                 const price = info.price;
                 const first = info.first_price || price;
                 const diff = price - first;
@@ -278,13 +653,13 @@
                 let trendClass, trendText;
                 if (diff < 0) {
                     trendClass = 'trend-down';
-                    trendText = `\u25BC ${diff.toLocaleString('de-DE')} \u20ac (${pct}%)`;
+                    trendText = `\u25BC ${diff.toLocaleString('de-DE')} \u20ac`;
                 } else if (diff > 0) {
                     trendClass = 'trend-up';
-                    trendText = `\u25B2 +${diff.toLocaleString('de-DE')} \u20ac (+${pct}%)`;
+                    trendText = `\u25B2 +${diff.toLocaleString('de-DE')} \u20ac`;
                 } else {
                     trendClass = 'trend-same';
-                    trendText = '\u2796 unver\u00e4ndert';
+                    trendText = '\u2014 0';
                 }
 
                 html += `
@@ -305,12 +680,10 @@
             container.innerHTML = html || '<p class="loading">Noch keine Daten vorhanden.</p>';
         }
 
-        // Service Worker registrieren (PWA)
+        // ── Init ──
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
-
-        // Auto-Refresh alle 5 Minuten
         loadData();
         setInterval(loadData, 5 * 60 * 1000);
     </script>
