@@ -1,0 +1,16 @@
+{
+  "name": "Check24 Preismonitor",
+  "short_name": "Preismonitor",
+  "description": "Hotel-Preisüberwachung für Check24",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f0f23",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

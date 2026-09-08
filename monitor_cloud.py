@@ -17,46 +17,24 @@ from playwright.async_api import async_playwright
 
 # ─── Konfiguration ───────────────────────────────────────────────────────────
 
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
-TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
-
 BASE_DIR = Path(__file__).parent
+CONFIG_FILE = BASE_DIR / "config.json"
 PRICES_FILE = BASE_DIR / "prices.json"
+DOCS_PRICES = BASE_DIR / "docs" / "prices.json"
 
 REMOVE_PARAMS = {"hotelListId", "budgetMax", "bestSeller"}
 
-HOTELS = [
-    {
-        "id": "9279",
-        "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive%2CallinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=660&ds=r&extendedSearch=1&hotelId=9279&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=600&roomAllocation=A-13%2CA-9&sorting=categoryDistribution&transfer=transfer&transportType=flight",
-    },
-    {
-        "id": "18493",
-        "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive,allinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13,A-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=18493&extendedSearch=1",
-    },
-    {
-        "id": "3703",
-        "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive,allinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13,A-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=3703&extendedSearch=1",
-    },
-    {
-        "id": "3694",
-        "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive,allinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13,A-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=3694&extendedSearch=1",
-    },
-    {
-        "id": "61801",
-        "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive,allinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13,A-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=61801&extendedSearch=1",
-    },
-    {
-        "id": "68",
-        "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive,allinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13,A-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=68&extendedSearch=1",
-    },
-    {
-        "id": "4409",
-        "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive,allinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13,A-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=4409&extendedSearch=1",
-    },
-]
 
-SUMMARY_HOURS = [8, 12, 16, 20, 23]
+def load_config():
+    config = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+    return config
+
+
+CONFIG = load_config()
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", CONFIG.get("telegram_token", ""))
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", CONFIG.get("telegram_chat_id", ""))
+HOTELS = CONFIG.get("hotels", [])
+SUMMARY_HOURS = CONFIG.get("summary_hours", [8, 12, 16, 20, 23])
 
 # ─── Hilfsfunktionen ─────────────────────────────────────────────────────────
 
@@ -277,6 +255,13 @@ async def main():
         send_telegram("\n".join(lines))
 
     save_prices(prices_data)
+
+    # Preisdaten auch nach docs/ kopieren für GitHub Pages PWA
+    import shutil
+    DOCS_PRICES.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(PRICES_FILE, DOCS_PRICES)
+    log(f"Preisdaten nach docs/ kopiert.")
+
     log("=== Preischeck abgeschlossen ===")
 
 
