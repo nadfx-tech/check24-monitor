@@ -1,9 +1,9 @@
 name: Check24 Preismonitor
 
 on:
-  schedule:
-    # Alle 15 Minuten
-    - cron: '*/15 * * * *'
+  # schedule:
+  #   # Alle 15 Minuten
+  #   - cron: '*/15 * * * *'
   workflow_dispatch: # Manueller Start möglich
 
 permissions:
