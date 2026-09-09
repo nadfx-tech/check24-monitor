@@ -6,7 +6,7 @@
     "max_price": 3545.0,
     "first_price": 3545.0,
     "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive%2CallinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=660&ds=r&extendedSearch=1&hotelId=9279&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=600&roomAllocation=A-13%2CA-9&sorting=categoryDistribution&transfer=transfer&transportType=flight",
-    "last_check": "2026-09-09T08:45:37.113645",
+    "last_check": "2026-09-09T08:59:22.348970",
     "history": [
       {
         "price": 3545.0,
@@ -311,6 +311,10 @@
       {
         "price": 3545.0,
         "timestamp": "2026-09-09T08:45:37.113634"
+      },
+      {
+        "price": 3545.0,
+        "timestamp": "2026-09-09T08:59:22.348959"
       }
     ]
   },
@@ -321,7 +325,7 @@
     "max_price": 4274.0,
     "first_price": 4218.0,
     "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive%2CallinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13%2CA-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=18493&extendedSearch=1",
-    "last_check": "2026-09-09T08:45:51.975369",
+    "last_check": "2026-09-09T08:59:32.779437",
     "history": [
       {
         "price": 4218.0,
@@ -626,17 +630,21 @@
       {
         "price": 4178.0,
         "timestamp": "2026-09-09T08:45:51.975357"
+      },
+      {
+        "price": 4178.0,
+        "timestamp": "2026-09-09T08:59:32.779427"
       }
     ]
   },
   "3703": {
     "name": "allsun Hotel Calypso Palace",
-    "price": 3864.0,
+    "price": 3896.0,
     "min_price": 3670.0,
     "max_price": 3896.0,
     "first_price": 3766.0,
     "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive%2CallinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13%2CA-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=3703&extendedSearch=1",
-    "last_check": "2026-09-09T08:46:06.823110",
+    "last_check": "2026-09-09T08:59:42.530818",
     "history": [
       {
         "price": 3766.0,
@@ -941,6 +949,10 @@
       {
         "price": 3864.0,
         "timestamp": "2026-09-09T08:46:06.823103"
+      },
+      {
+        "price": 3896.0,
+        "timestamp": "2026-09-09T08:59:42.530808"
       }
     ]
   },
@@ -951,7 +963,7 @@
     "max_price": 4314.0,
     "first_price": 4068.0,
     "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive%2CallinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13%2CA-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=3694&extendedSearch=1",
-    "last_check": "2026-09-09T08:46:18.676395",
+    "last_check": "2026-09-09T08:59:53.414061",
     "history": [
       {
         "price": 4068.0,
@@ -1256,6 +1268,10 @@
       {
         "price": 4314.0,
         "timestamp": "2026-09-09T08:46:18.676385"
+      },
+      {
+        "price": 4314.0,
+        "timestamp": "2026-09-09T08:59:53.414052"
       }
     ]
   },
@@ -1266,7 +1282,7 @@
     "max_price": 4152.0,
     "first_price": 3896.0,
     "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive%2CallinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13%2CA-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=61801&extendedSearch=1",
-    "last_check": "2026-09-09T08:46:33.118291",
+    "last_check": "2026-09-09T09:00:03.987129",
     "history": [
       {
         "price": 3896.0,
@@ -1571,17 +1587,21 @@
       {
         "price": 4150.0,
         "timestamp": "2026-09-09T08:46:33.118283"
+      },
+      {
+        "price": 4150.0,
+        "timestamp": "2026-09-09T09:00:03.987120"
       }
     ]
   },
   "68": {
     "name": "Rodos Princess Beach Resort & Spa",
-    "price": 3876.0,
+    "price": 3932.0,
     "min_price": 3876.0,
     "max_price": 3947.0,
     "first_price": 3947.0,
     "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive%2CallinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13%2CA-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=68&extendedSearch=1",
-    "last_check": "2026-09-09T08:46:53.606949",
+    "last_check": "2026-09-09T09:00:16.768349",
     "history": [
       {
         "price": 3947.0,
@@ -1886,6 +1906,10 @@
       {
         "price": 3876.0,
         "timestamp": "2026-09-09T08:46:53.606939"
+      },
+      {
+        "price": 3932.0,
+        "timestamp": "2026-09-09T09:00:16.768338"
       }
     ]
   },
@@ -1896,7 +1920,7 @@
     "max_price": 3908.0,
     "first_price": 3644.0,
     "url": "https://urlaub.check24.de/suche/angebot?airport=FRA&areaId=600&areaSort=topregion&cateringList=allinclusive%2CallinclusivePlus&days=8-10&departureDate=2026-10-18&departureFlightTimeFrom=630&departureFlightTimeUntil=1439&ds=r&offerSort=offerRanking&pageArea=package&rating=8&returnDate=2026-10-30&returnFlightTimeFrom=630&returnFlightTimeUntil=1439&roomAllocation=A-13%2CA-9&sorting=categoryDistribution&transfer=transfer&transportType=flight&hotelId=4409&extendedSearch=1",
-    "last_check": "2026-09-09T08:47:12.562000",
+    "last_check": "2026-09-09T09:00:29.374758",
     "history": [
       {
         "price": 3644.0,
@@ -2201,6 +2225,10 @@
       {
         "price": 3900.0,
         "timestamp": "2026-09-09T08:47:12.561991"
+      },
+      {
+        "price": 3900.0,
+        "timestamp": "2026-09-09T09:00:29.374748"
       }
     ]
   }
